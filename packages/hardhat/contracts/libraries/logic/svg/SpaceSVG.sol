@@ -1,6 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
+// import "hardhat/console.sol";
+
 import { Strings } from "../../../dependencies/Strings.sol";
 import { Base64 } from "base64-sol/base64.sol";
 
@@ -38,6 +40,8 @@ library SpaceSVG {
 			bytes(generateSVG(bodies, s_bodiesById, space, tokenId))
 		);
 
+		// console.log(image);
+
 		return TokenURIGen.generateSVGTokenURI(name, description, image);
 	}
 
@@ -65,6 +69,16 @@ library SpaceSVG {
 			)
 		);
 
+		string memory wholeSky = string(
+			abi.encodePacked(
+				'<rect x="15.4546" y="17.6699" width="512.58249" height="719.2373" style="fill:',
+				"rgb(38, 22, 63)",
+				';"><title>whole-sky</title></rect>'
+			)
+		);
+
+		string memory start = generateStart();
+
 		(
 			string memory exMountain,
 			string memory smallMountain,
@@ -79,6 +93,10 @@ library SpaceSVG {
 		return
 			string(
 				abi.encodePacked(
+					start,
+					wholeSky,
+					"#shooting1",
+					"#shooting2",
 					"#greyStars",
 					"#yellowStars",
 					"#whiteStars",
@@ -89,7 +107,8 @@ library SpaceSVG {
 					smallMountain,
 					unnamedPath2,
 					firstSet,
-					text
+					text,
+					"</g></g></g></svg>"
 				)
 			);
 	}
@@ -127,22 +146,14 @@ library SpaceSVG {
 		DataTypes.Space calldata space,
 		uint256 tokenId
 	) private view returns (string memory) {
-		string memory wholeSky = string(
-			abi.encodePacked(
-				'<rect x="15.4546" y="17.6699" width="512.58249" height="719.2373" style="fill:',
-				space.wholeSkyColor,
-				';"><title>whole-sky</title></rect>'
-			)
-		);
 
-		string memory start = generateStart();
 
-		abi.encodePacked(
-			start,
-			wholeSky,
-			renderTokenById(bodies, s_bodiesById, space, tokenId),
-			"</g></g></g></svg>"
-		);
+		return
+			string(
+				abi.encodePacked(
+					renderTokenById(bodies, s_bodiesById, space, tokenId)
+				)
+			);
 	}
 
 	function generateMountain(
@@ -288,15 +299,15 @@ library SpaceSVG {
 		string memory unnamedPath2b1 = string(
 			abi.encodePacked(
 				'<path id="down_rok_top" data-name="down rok top" d="M510.75879,439.3369c-8.417,1.3291-17.2783,4.4306-18.6074,12.8486-1.3291,8.416-3.9873,11.5186-11.5186,11.5186-7.5312,0-13.291,5.7597-12.4053,7.9746.8868,2.2158-4.8818,8.6181-12.5849,5.5254-7.7031-3.0938-14.4385-6.1084-13.9961.8281.4433,6.9375,8.7588,14.9287-3.8174,13.5918-12.5752-1.3379-12.1318-3.1104-11.6885,2.6484.44241,5.7608-6.2715,6.1582-25.5088,5.959-19.2373-.1982-33.8574-4.1543-33.8574.0381,0,4.1934-5.7598,3.1016-14.6211,2.54-8.86029-.5615-14.6191-.1181-15.0625,5.1973-.4433,5.3174-7.5312,9.3037-15.9492,9.3037-8.417,0-11.6611,7.415-13.291,16.8359s-6.6445,14.1758-11.51859,11.962c-4.874-2.2149-13.291.8857-14.17721,3.1005-.8862,2.2149-7.0884,8.8614-7.9736,3.544-.8868-5.3154-10.6285-9.7461-12.84719-2.6572-2.21681,7.0888,3.98579,10.1894-15.50731,10.1894-19.49369,0-52.27789-16.8349-65.56889-16.8349-13.2915,0-24.3672,4.872-19.9365,9.3027,4.4297,4.4316,7.3198,6.2031-.9917,7.5322-8.3115,1.3281-6.0962,3.9873-4.3242,7.5303,1.7724,3.5449,12.8471,6.6465-12.8487,7.5322-25.6963.8867-40.7588,7.0889-40.3154,13.7344.4429,6.6455-1.7725,3.5439-14.1763,8.8603-12.4057,5.3164-38.5444,8.8604-25.6972,11.0752,12.8481,2.2159,56.2651-4.872,46.9614,0-9.3032,4.875-24.0278,11.0772-23.5327,15.0635.4951,3.9883-8.3652,2.2158-18.5547,2.6582-10.1899.4434-15.9492,5.7598-21.2656,9.3037-5.3164,3.545-17.522,4.8741-17.522,4.8741v91.2636L544.75679,779Z" style="fill:',
-				space.mainRiverColor,
+				"rgb(11, 31, 61)",
 				';"><title>main-river</title></path><path id="down_rock_shadow" data-name="down rock shadow" d="M24.5415,653.9961s47.1646-2.2901,62.2739-5.0372c15.1114-2.746,29.7637-28.8476,78.2998-29.3046-13.2783,7.3261-61.3564,13.2783-26.0996,18.3154,35.2583,5.0361,72.34769,15.5683,89.74809,18.3154,17.4004,2.749,102.11131,32.0528,102.11131,32.0528l79.67289,4.58,197.79589,98.1123L176.9873,806.497,10.2881,791.0302Z" style="fill:',
-				space.mountainDarkColor
+				"rgb(8, 24, 48)"
 			)
 		);
 		string memory unnamedPath2b2 = string(
 			abi.encodePacked(
 				';"><title>mountain-dark</title></path><path d="M531.43259,506.5586c-39.8359-3.2051-47.1631,13.7363-58.1533,14.1943-10.98929.458-27.4727-4.5781-44.873-.916-17.3995,3.6631-79.2168,3.6631-73.7217,9.6162,5.4941,5.9521,51.2842,9.1562,28.3896,16.9414-22.8955,7.7851-73.7217,25.1846-73.7217,25.1846s-46.7046,31.5918-54.9462,38.0039c-8.2422,6.4101,151.1044,17.4004,166.2158,18.7734,15.1113,1.3731,104.8584,63.6465,105.7734,61.8145C527.31149,688.3388,531.43259,506.5586,531.43259,506.5586Z" style="fill:',
-				space.mountainDarkColor,
+				"rgb(8, 24, 48)",
 				';"><title>mountain-dark</title></path>'
 			)
 		);

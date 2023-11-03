@@ -8,7 +8,7 @@ interface ISpace is IERC721Enumerable {
 	event SpaceBodyAdded(address body);
 	event SpaceBodyRemoved(address body);
 
-	function mint() external payable returns (uint256);
+	function mint(string calldata text) external payable returns (uint256);
 
 	function addSpaceBody(address body) external;
 

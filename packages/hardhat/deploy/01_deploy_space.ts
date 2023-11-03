@@ -58,8 +58,8 @@ const deploySpace: DeployFunction = async function (hre: HardhatRuntimeEnvironme
     log: true,
     libraries: {
       AttributesGen: attributesGen.address,
-      SnowmanMetadata: spaceSVG.address,
-      AccessoryManager: bodyManager.address,
+      SpaceSVG: spaceSVG.address,
+      BodyManager: bodyManager.address,
     },
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.

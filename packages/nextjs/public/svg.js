@@ -1,4 +1,4 @@
-let definitions = `<defs>
+export const definitions = `<defs>
 <clipPath id="clip-path">
   <rect x="27.4736" y="24.5566" width="484.63089" height="754.4434" style="fill:none" />
 </clipPath>
@@ -2953,7 +2953,7 @@ let definitions = `<defs>
 </radialGradient>
 </defs>`;
 
-let grey_stars = `<g id="grey_stars" data-name="grey stars" style="">
+export const grey_stars = `<g id="grey_stars" data-name="grey stars" style="">
 <title>stars</title>
 <path d="M79.1929,88.9936a2.53075,2.53075,0,1,0,2.5307-2.5303A2.53042,2.53042,0,0,0,79.1929,88.9936Z"
   style="fill:#342454" />
@@ -3015,7 +3015,7 @@ let grey_stars = `<g id="grey_stars" data-name="grey stars" style="">
   style="fill:#342454" />
 </g>`;
 
-let yellow_stars = `<g>
+export const yellow_stars = `<g>
 <title>yellow-star</title>
 <path id="yellow_star" data-name="yellow star"
   d="M108.8765,80.7475a.8689.8689,0,1,1-.8687-.8681A.86885.86885,0,0,1,108.8765,80.7475Z"
@@ -3049,7 +3049,7 @@ let yellow_stars = `<g>
   style="fill:#f9e700" />
 </g>`;
 
-let white_stars = `<g style="">
+export const white_stars = `<g style="">
 <title>white-stars</title>
 <path id="white_star" data-name="white star"
   d="M160.3257,128.40474a1.781,1.781,0,1,1-1.7808-1.78125A1.7806,1.7806,0,0,1,160.3257,128.40474Z"
@@ -3089,7 +3089,7 @@ let white_stars = `<g style="">
   style="fill: rgb(255, 255, 255);" />
 </g>`;
 
-let sun = `<g style="" transform="matrix(0.966634, 0, 0, 0.951613, -351.195984, -67.657822)">
+export const sun = `<g style="" transform="matrix(0.966634, 0, 0, 0.951613, -351.195984, -67.657822)">
 <title>sun</title>
 <path
   d="M477.75665,142.29925a36.9754,36.9754,0,1,1-36.97433-36.97462A36.97475,36.97475,0,0,1,477.75665,142.29925Z"
@@ -6959,3 +6959,25 @@ let sun = `<g style="" transform="matrix(0.966634, 0, 0, 0.951613, -351.195984, 
   <title>sunray</title>
 </path>
 </g>`;
+
+export const shooting1 = `<path
+          d="M 561.392 -76.426 L 434.379 -4.943 C 434.379 -4.943 429.759 -2.162 430.159 -0.772 C 430.159 -0.772 430.159 1.014 433.775 -0.772 L 647.886 -125.523 L 561.392 -76.426 Z"
+          style="mix-blend-mode: screen; fill: url('#linear-gradient-61'); display: inline;">
+          <title>shooting 1</title>
+          <animateMotion path="M -45.307 6.849 L -664.613 282.524" calcMode="linear" dur="30s" fill="freeze"
+            repeatCount="indefinite" />
+</path>`;
+export const shooting2 = `<path
+          d="M 404.477 -75.938 L 277.464 -4.455 C 277.464 -4.455 272.844 -1.674 273.244 -0.284 C 273.244 -0.284 273.244 1.502 276.861 -0.284 L 490.971 -125.036 L 404.477 -75.938 Z"
+          style="mix-blend-mode: screen; fill: url('#linear-gradient-62'); display: initial;">
+          <title>shooting 2</title>
+          <animateMotion path="M 184.274 3.226 L -341.707 408.195" calcMode="linear" dur="30s" fill="freeze"
+            repeatCount="indefinite" begin="15s" />
+</path>`;
+export const shooting3 = `<path
+          d="M 404.477 -75.938 L 277.464 -4.455 C 277.464 -4.455 272.844 -1.674 273.244 -0.284 C 273.244 -0.284 273.244 1.502 276.861 -0.284 L 490.971 -125.036 L 404.477 -75.938 Z"
+          style="mix-blend-mode: screen; fill: url('#linear-gradient-62'); display: initial;">
+          <title>shooting 2</title>
+          <animateMotion path="M 184.274 3.226 L -341.707 408.195" calcMode="linear" dur="30s" fill="freeze"
+            repeatCount="indefinite" begin="0s" />
+</path>`;

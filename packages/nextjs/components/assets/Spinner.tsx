@@ -6,6 +6,7 @@ export const Spinner = ({ width, height }: { width?: string; height?: string }) 
       style={{
         width,
         height,
+        margin: "0 auto",
       }}
       viewBox="0 0 100 101"
       xmlns="http://www.w3.org/2000/svg"

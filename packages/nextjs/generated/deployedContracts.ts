@@ -5,11 +5,11 @@ const contracts = {
       name: "localhost",
       contracts: {
         AttributesGen: {
-          address: "0xfaAddC93baf78e89DCf37bA67943E1bE8F37Bb8c",
+          address: "0x5f3f1dBD7B74C6B46e8c44f98792A1dAf8d69154",
           abi: [],
         },
         BodyManager: {
-          address: "0xA7c59f010700930003b33aB25a7a0679C860f29c",
+          address: "0x1291Be112d480055DaFd8a610b7d1e203891C274",
           abi: [
             {
               anonymous: false,
@@ -46,7 +46,7 @@ const contracts = {
           ],
         },
         Space: {
-          address: "0x276C216D241856199A83bf27b2286659e5b877D3",
+          address: "0xb7278A61aa25c888815aFC32Ad3cC52fF24fE575",
           abi: [
             {
               inputs: [
@@ -518,7 +518,13 @@ const contracts = {
               type: "function",
             },
             {
-              inputs: [],
+              inputs: [
+                {
+                  internalType: "string",
+                  name: "text",
+                  type: "string",
+                },
+              ],
               name: "mint",
               outputs: [
                 {
@@ -903,11 +909,11 @@ const contracts = {
           ],
         },
         SpaceSVG: {
-          address: "0x22753E4264FDDc6181dc7cce468904A80a363E44",
+          address: "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
           abi: [],
         },
         TokenURIGen: {
-          address: "0x07882Ae1ecB7429a84f1D53048d35c4bB2056877",
+          address: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
           abi: [
             {
               inputs: [

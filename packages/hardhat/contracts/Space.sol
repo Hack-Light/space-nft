@@ -56,7 +56,7 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 		// console.log(s_feeCollector);
 	}
 
-	function mint() public payable returns (uint256) {
+	function mint(string calldata text) public payable returns (uint256) {
 		if (msg.value != MINT_FEE) revert Errors.Space__InvalidMintFee();
 
 		s_tokenIds.increment();
@@ -66,7 +66,7 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 
 		// console.log(msg.sender, tokenId);
 
-		AttributesGen.generateAttributes(s_attributes, tokenId);
+		AttributesGen.generateAttributes(s_attributes, tokenId, text);
 
 		return tokenId;
 	}
@@ -133,23 +133,20 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 		return s_bodiesAvailable[body];
 	}
 
-	// comment this out
+	function tokenURI(
+		uint256 tokenId
+	) public view override(ERC721, ISpace) returns (string memory) {
+		if (!_exists(tokenId)) revert Errors.Space__NotMinted();
 
-	// function tokenURI(
-	// 	uint256 tokenId
-	// ) public view override(ERC721, ISpace) returns (string memory) {
-	// 	if (!_exists(tokenId)) revert Errors.Space__NotMinted();
+		return
+			SpaceSVG.tokenURI(
+				s_bodies,
+				s_bodiesById,
+				s_attributes[tokenId],
+				tokenId
+			);
+	}
 
-	// 	return
-	// 		SpaceSVG.tokenURI(
-	// 			s_bodies,
-	// 			s_bodiesById,
-	// 			s_attributes[tokenId],
-	// 			tokenId
-	// 		);
-	// }
-
-	// comment this out
 
 	function renderTokenById(
 		uint256 tokenId
@@ -163,11 +160,4 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 
 	function withdrawFees() external override {}
 
-	function tokenURI(
-		uint256 tokenId
-	) public view override(ERC721, ISpace) returns (string memory) {}
-
-	// function renderTokenById(
-	// 	uint256 tokenId
-	// ) external view override returns (string memory) {}
 }
