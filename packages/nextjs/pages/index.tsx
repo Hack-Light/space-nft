@@ -74,12 +74,9 @@ const Home: NextPage = () => {
       if (!isConnected || isLoadingSpaceContract) return;
 
       setIsLoading(true);
-      console.log("got here", connectedAccount);
 
       if (!spaceContract?.address) return;
       if (!connectedAccount) return;
-
-      console.log("got here 2", publicClient);
 
       let balance = await publicClient.readContract({
         address: spaceContract.address,
@@ -87,8 +84,6 @@ const Home: NextPage = () => {
         functionName: "balanceOf",
         args: [connectedAccount],
       });
-
-      console.log("got here 3 ", balance);
 
       if (balance < BigInt(1)) balance = BigInt(0);
 

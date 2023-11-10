@@ -25,7 +25,8 @@ library DataTypes {
 	}
 
 	struct Planet {
-		string color;
+		string mainColor;
+		string halfColor;
 	}
 
 	struct ShootingStar {

@@ -2,12 +2,12 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
 /**
- * Deploys a contract named "Space" using the deployer account and
+ * Deploys a contract named "Hat" using the deployer account and
  * constructor arguments set to the deployer address
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deploySpace: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployPlanet: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
@@ -20,48 +20,38 @@ const deploySpace: DeployFunction = async function (hre: HardhatRuntimeEnvironme
   */
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
-  console.log("started");
 
   // Deploy libraries
   const TokenURIGen = await deploy("TokenURIGen", {
     from: deployer,
   });
-  console.log(1, TokenURIGen.address);
 
-  const spaceSVG = await deploy("SpaceSVG", {
-    from: deployer,
-    libraries: {
-      TokenURIGen: TokenURIGen.address,
-    },
-  });
-  console.log(2, spaceSVG.address);
-
-  const bodyManager = await deploy("BodyManager", {
+  const planetSVG = await deploy("PlanetSVG", {
     from: deployer,
     libraries: {
       TokenURIGen: TokenURIGen.address,
     },
   });
 
-  const attributesGen = await deploy("AttributesGen", {
-    from: deployer,
-  });
-
-  await deploy("Space", {
+  // Deploy accessories
+  await deploy("Planet", {
     from: deployer,
     args: [deployer],
     log: true,
     libraries: {
-      AttributesGen: attributesGen.address,
-      SpaceSVG: spaceSVG.address,
-      BodyManager: bodyManager.address,
+      PlanetSVG: planetSVG.address,
     },
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
+
+  // Get the deployed contract
+  // const Planet = await hre.ethers.getContract("Planet", deployer);
 };
 
-export default deploySpace;
+export default deployPlanet;
 
-deploySpace.tags = ["Space"];
+// Tags are useful if you have multiple deploy files and only want to run one of them.
+// e.g. yarn deploy --tags Planet
+deployPlanet.tags = ["Planet"];

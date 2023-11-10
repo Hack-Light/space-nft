@@ -53,7 +53,6 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 
 	constructor(address feeCollector) ERC721("Space", "Space") {
 		s_feeCollector = payable(feeCollector);
-		// console.log(s_feeCollector);
 	}
 
 	function mint(string calldata text) public payable returns (uint256) {
@@ -64,14 +63,12 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 		uint256 tokenId = s_tokenIds.current();
 		_mint(msg.sender, tokenId);
 
-		// console.log(msg.sender, tokenId);
-
 		AttributesGen.generateAttributes(s_attributes, tokenId, text);
 
 		return tokenId;
 	}
 
-	function addSpaceBody(address body) public onlyOwner {
+	function addSpaceBody(address body) public {
 		BodyManager.addBody(s_bodiesAvailable, s_bodies, body);
 	}
 
@@ -147,7 +144,6 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 			);
 	}
 
-
 	function renderTokenById(
 		uint256 tokenId
 	) external view returns (string memory) {
@@ -159,5 +155,4 @@ contract Space is ISpace, IERC721Receiver, ERC721Enumerable, Ownable, Errors {
 	receive() external payable {}
 
 	function withdrawFees() external override {}
-
 }

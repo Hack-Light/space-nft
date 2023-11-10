@@ -40,8 +40,6 @@ library SpaceSVG {
 			bytes(generateSVG(bodies, s_bodiesById, space, tokenId))
 		);
 
-		// console.log(image);
-
 		return TokenURIGen.generateSVGTokenURI(name, description, image);
 	}
 
@@ -69,16 +67,6 @@ library SpaceSVG {
 			)
 		);
 
-		string memory wholeSky = string(
-			abi.encodePacked(
-				'<rect x="15.4546" y="17.6699" width="512.58249" height="719.2373" style="fill:',
-				"rgb(38, 22, 63)",
-				';"><title>whole-sky</title></rect>'
-			)
-		);
-
-		string memory start = generateStart();
-
 		(
 			string memory exMountain,
 			string memory smallMountain,
@@ -93,10 +81,6 @@ library SpaceSVG {
 		return
 			string(
 				abi.encodePacked(
-					start,
-					wholeSky,
-					"#shooting1",
-					"#shooting2",
 					"#greyStars",
 					"#yellowStars",
 					"#whiteStars",
@@ -121,6 +105,16 @@ library SpaceSVG {
 	) public view returns (string memory) {
 		string memory token = renderSpace(space);
 
+		string memory wholeSky = string(
+			abi.encodePacked(
+				'<rect x="15.4546" y="17.6699" width="512.58249" height="719.2373" style="fill:',
+				"rgb(38, 22, 63)",
+				';"><title>whole-sky</title></rect>'
+			)
+		);
+
+		string memory start = generateStart();
+
 		uint256 numOfBodies = bodies.length;
 
 		for (uint256 i = 0; i < numOfBodies; i++) {
@@ -137,7 +131,16 @@ library SpaceSVG {
 			}
 		}
 
-		return token;
+		return
+			string(
+				abi.encodePacked(
+					start,
+					wholeSky,
+					"#shooting1",
+					"#shooting2",
+					token
+				)
+			);
 	}
 
 	function generateSVG(
@@ -146,8 +149,6 @@ library SpaceSVG {
 		DataTypes.Space calldata space,
 		uint256 tokenId
 	) private view returns (string memory) {
-
-
 		return
 			string(
 				abi.encodePacked(
