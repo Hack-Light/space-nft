@@ -31,7 +31,7 @@ const bodies: BodiesProps[] = [
 const Home: NextPage = () => {
   // component states
   const [planetBalance, setPlanetBalance] = useState<number>(0);
-  // const [balance, setBalance] = useState<number>(0);
+  const [jupiterBalance, setJupiterBalance] = useState<number>(0);
   // const [balance, setBalance] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isMinting, setIsMinting] = useState(false);
@@ -44,26 +44,27 @@ const Home: NextPage = () => {
   // contracts
   const { data: spaceContract, isLoading: isLoadingSpaceContract } = useDeployedContractInfo("Space");
   const { data: planetContract, isLoading: isLoadingPlanetContract } = useDeployedContractInfo("Planet");
-  // const { data: spaceContract, isLoading: isLoadingSpaceContract } = useDeployedContractInfo("Jupiter");
+  const { data: jupiterContract, isLoading: isLoadingJupiterContract } = useDeployedContractInfo("Jupiter");
   // const { data: spaceContract, isLoading: isLoadingSpaceContract } = useDeployedContractInfo("ShootingStar");
 
   const publicClient = usePublicClient();
   const { data: signer, isLoading: isLoadingSigner } = useWalletClient();
 
   const handleMint = async (body: BodiesProps) => {
-    if (isLoadingPlanetContract || isLoadingSigner) return;
+    if (isLoadingPlanetContract || isLoadingJupiterContract || isLoadingSigner) return;
 
     if (!planetContract?.address) return;
+    if (!jupiterContract?.address) return;
 
     if (isMinting) {
-      notification.info("Currently minting space");
+      notification.info(`Currently minting ${body.name}`);
       return;
     }
 
     setIsMinting(true);
     setIsLoading(true);
 
-    const notificationId = notification.loading("Minting One(1) Space");
+    const notificationId = notification.loading(`Minting One(1) ${body.name}`);
 
     let hash: `0x${string}` | undefined;
 
@@ -73,6 +74,14 @@ const Home: NextPage = () => {
           hash = await signer?.writeContract({
             address: planetContract.address,
             abi: planetContract.abi,
+            functionName: "mint",
+            value: parseEther("0.01"),
+          });
+          break;
+        case "Jupiter":
+          hash = await signer?.writeContract({
+            address: jupiterContract.address,
+            abi: jupiterContract.abi,
             functionName: "mint",
             value: parseEther("0.01"),
           });
@@ -105,6 +114,7 @@ const Home: NextPage = () => {
     setIsLoading(true);
 
     if (!planetContract?.address) return;
+    if (!jupiterContract?.address) return;
 
     const notificationId = notification.loading(`Transferring ${body.name}`);
 
@@ -118,6 +128,23 @@ const Home: NextPage = () => {
           hash = await signer?.writeContract({
             address: planetContract.address,
             abi: planetContract.abi,
+            functionName: "safeTransferFrom",
+            args: [
+              connectedAccount,
+              spaceContract?.address,
+              tokenId,
+              encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(tokenId) || BigInt(0)]),
+            ],
+            gas: BigInt(500000),
+          });
+          break;
+        case "Jupiter":
+          if (isLoadingJupiterContract) return;
+          console.log(spaceContract);
+
+          hash = await signer?.writeContract({
+            address: jupiterContract.address,
+            abi: jupiterContract.abi,
             functionName: "safeTransferFrom",
             args: [
               connectedAccount,
@@ -149,7 +176,8 @@ const Home: NextPage = () => {
     switch (bodyId) {
       case "planet":
         return planetBalance;
-      // Add cases for other bodies as needed
+      case "jupiter":
+        return jupiterBalance;
       default:
         return 0; // Default to 0 if balance information is not available
     }
@@ -163,6 +191,7 @@ const Home: NextPage = () => {
       setIsMinting(false);
 
       if (!planetContract?.address) return;
+      if (!jupiterContract?.address) return;
       if (!connectedAccount) return;
 
       // balance and tokenid for planet
@@ -185,6 +214,28 @@ const Home: NextPage = () => {
         const planetid = await planet.read.tokenOfOwnerByIndex([connectedAccount, BigInt(Number(pBalance) - 1)]);
 
         setTokenIds({ ...tokenIds, planet: planetid });
+      }
+
+      // balance and tokenid for jupiter
+      const jBalance = await publicClient.readContract({
+        address: jupiterContract.address,
+        abi: jupiterContract.abi,
+        functionName: "balanceOf",
+        args: [connectedAccount],
+      });
+
+      setJupiterBalance(Number(jBalance.toString()));
+
+      if (Number(jBalance.toString()) > 0) {
+        const jupiter = getContract({
+          address: jupiterContract.address,
+          abi: jupiterContract.abi,
+          publicClient,
+        });
+
+        const jupiterid = await jupiter.read.tokenOfOwnerByIndex([connectedAccount, BigInt(Number(jBalance) - 1)]);
+
+        setTokenIds({ ...tokenIds, jupiter: jupiterid });
       }
 
       setIsLoading(false);

@@ -21,7 +21,11 @@ library DataTypes {
 	}
 
 	struct Jupiter {
-		string color;
+		string color1;
+		string color2;
+		string color3;
+		string color4;
+		string color5;
 	}
 
 	struct Planet {
