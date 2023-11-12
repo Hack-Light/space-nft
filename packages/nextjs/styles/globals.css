@@ -17,8 +17,9 @@ header {
   min-height: 120px;
   padding: 50px 0;
   color: #fff;
-  background: #383838 url(https://www.athenadesignstudio.com/plugins/switch/images/bg.jpg) no-repeat center center;
-  margin-bottom: 30px
+  /* background: #383838 url(https://www.athenadesignstudio.com/plugins/switch/images/bg.jpg) no-repeat center center; */
+  background: transparent;
+  /* margin-bottom: 30px */
 }
 
 /* Logo */

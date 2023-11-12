@@ -49,7 +49,7 @@ library SpaceSVG {
 		string memory wholeRiver = string(
 			abi.encodePacked(
 				'<rect x="19.0674" y="224.4296" width="504.98339" height="373.9561" style="fill:',
-				space.wholeRiverColor,
+				"rgb(26, 194, 216)",
 				'"><title>whole-river</title></rect>',
 				'<path d="M418.14159,254.499c-15.4404,0-122.89259-2.8355-126.6748,5.9883-3.7813,8.8227,69.9541,12.7939,118.7969,15.0625,48.8418,2.269,101.4648,11.7216,86.0254,13.2968-15.4405,1.5757-50.2207,3.4673-36.1397,5.9878,14.082,2.5201,77.418,10.0826,77.418,10.0826l-2.2051-46.6358Z" style="fill:',
 				space.riverColor3,
@@ -136,8 +136,6 @@ library SpaceSVG {
 				abi.encodePacked(
 					start,
 					wholeSky,
-					"#shooting1",
-					"#shooting2",
 					token
 				)
 			);

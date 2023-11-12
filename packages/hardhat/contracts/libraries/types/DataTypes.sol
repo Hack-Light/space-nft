@@ -34,6 +34,6 @@ library DataTypes {
 	}
 
 	struct ShootingStar {
-		string color;
+		uint256 duration;
 	}
 }

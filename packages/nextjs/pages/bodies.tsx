@@ -30,13 +30,19 @@ const bodies: BodiesProps[] = [
 
 const Home: NextPage = () => {
   // component states
+  const [spaceBalance, setSpaceBalance] = useState<number>(0);
   const [planetBalance, setPlanetBalance] = useState<number>(0);
   const [jupiterBalance, setJupiterBalance] = useState<number>(0);
-  // const [balance, setBalance] = useState<number>(0);
+  const [shootingStarBalance, setShootingStarBalance] = useState<number>(0);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isMinting, setIsMinting] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
-  const [tokenIds, setTokenIds] = useState({ planet: BigInt(0), jupiter: BigInt(0), "shooting-star": BigInt(0) });
+
+  // tokenids
+  const [pTokenId, setPTokenId] = useState(BigInt(0));
+  const [jTokenId, setJTokenId] = useState(BigInt(0));
+  const [sTokenId, setSTokenId] = useState(BigInt(0));
 
   // user account
   const { address: connectedAccount, isConnected } = useAccount();
@@ -45,7 +51,8 @@ const Home: NextPage = () => {
   const { data: spaceContract, isLoading: isLoadingSpaceContract } = useDeployedContractInfo("Space");
   const { data: planetContract, isLoading: isLoadingPlanetContract } = useDeployedContractInfo("Planet");
   const { data: jupiterContract, isLoading: isLoadingJupiterContract } = useDeployedContractInfo("Jupiter");
-  // const { data: spaceContract, isLoading: isLoadingSpaceContract } = useDeployedContractInfo("ShootingStar");
+  const { data: shootingStarContract, isLoading: isLoadingShootingStarContract } =
+    useDeployedContractInfo("ShootingStar");
 
   const publicClient = usePublicClient();
   const { data: signer, isLoading: isLoadingSigner } = useWalletClient();
@@ -55,6 +62,7 @@ const Home: NextPage = () => {
 
     if (!planetContract?.address) return;
     if (!jupiterContract?.address) return;
+    if (!shootingStarContract?.address) return;
 
     if (isMinting) {
       notification.info(`Currently minting ${body.name}`);
@@ -86,6 +94,14 @@ const Home: NextPage = () => {
             value: parseEther("0.01"),
           });
           break;
+        case "ShootingStar":
+          hash = await signer?.writeContract({
+            address: shootingStarContract.address,
+            abi: shootingStarContract.abi,
+            functionName: "mint",
+            value: parseEther("0.01"),
+          });
+          break;
 
         default:
           break;
@@ -95,7 +111,8 @@ const Home: NextPage = () => {
 
       await publicClient.waitForTransactionReceipt({ hash });
     } catch (error) {
-      notification.error(JSON.stringify(error));
+      notification.error(`Error occured while trying to mint ${body.name}`);
+      console.log(error);
     }
 
     notification.remove(notificationId);
@@ -103,18 +120,25 @@ const Home: NextPage = () => {
     setIsLoading(false);
   };
 
-  const handleSet = async (body: BodiesProps, tokenId: bigint) => {
+  const handleSet = async (body: BodiesProps) => {
     if (isComposing || !isConnected || isLoadingSigner || !connectedAccount || isLoadingSpaceContract) return;
 
-    if (!spaceContract?.address) return;
+    if (spaceBalance < 1) {
+      notification.error(`Try minting a space nft first`);
+      return;
+    }
 
-    if (!tokenId) return;
+    if (!spaceContract?.address) {
+      notification.error(`Space Contract not loaded`);
+      return;
+    }
 
     setIsComposing(true);
     setIsLoading(true);
 
     if (!planetContract?.address) return;
     if (!jupiterContract?.address) return;
+    if (!shootingStarContract?.address) return;
 
     const notificationId = notification.loading(`Transferring ${body.name}`);
 
@@ -132,15 +156,14 @@ const Home: NextPage = () => {
             args: [
               connectedAccount,
               spaceContract?.address,
-              tokenId,
-              encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(tokenId) || BigInt(0)]),
+              pTokenId,
+              encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(pTokenId) || BigInt(0)]),
             ],
             gas: BigInt(500000),
           });
           break;
         case "Jupiter":
           if (isLoadingJupiterContract) return;
-          console.log(spaceContract);
 
           hash = await signer?.writeContract({
             address: jupiterContract.address,
@@ -149,8 +172,24 @@ const Home: NextPage = () => {
             args: [
               connectedAccount,
               spaceContract?.address,
-              tokenId,
-              encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(tokenId) || BigInt(0)]),
+              jTokenId,
+              encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(jTokenId) || BigInt(0)]),
+            ],
+            gas: BigInt(500000),
+          });
+          break;
+        case "ShootingStar":
+          if (isLoadingShootingStarContract) return;
+
+          hash = await signer?.writeContract({
+            address: shootingStarContract.address,
+            abi: shootingStarContract.abi,
+            functionName: "safeTransferFrom",
+            args: [
+              connectedAccount,
+              spaceContract?.address,
+              sTokenId,
+              encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(sTokenId) || BigInt(0)]),
             ],
             gas: BigInt(500000),
           });
@@ -165,6 +204,7 @@ const Home: NextPage = () => {
       await publicClient.waitForTransactionReceipt({ hash });
     } catch (error) {
       console.log(error);
+      notification.error(`Error occured while trying to compose ${body.name}`);
     }
     notification.remove(notificationId);
     setIsComposing(false);
@@ -178,6 +218,8 @@ const Home: NextPage = () => {
         return planetBalance;
       case "jupiter":
         return jupiterBalance;
+      case "shooting-star":
+        return shootingStarBalance;
       default:
         return 0; // Default to 0 if balance information is not available
     }
@@ -192,7 +234,21 @@ const Home: NextPage = () => {
 
       if (!planetContract?.address) return;
       if (!jupiterContract?.address) return;
+      if (!shootingStarContract?.address) return;
+      if (!spaceContract?.address) return;
       if (!connectedAccount) return;
+
+      // space balance
+      let balance = await publicClient.readContract({
+        address: spaceContract.address,
+        abi: spaceContract.abi,
+        functionName: "balanceOf",
+        args: [connectedAccount],
+      });
+
+      if (balance < BigInt(1)) balance = BigInt(0);
+
+      setSpaceBalance(Number(balance.toString()));
 
       // balance and tokenid for planet
       const pBalance = await publicClient.readContract({
@@ -213,7 +269,9 @@ const Home: NextPage = () => {
 
         const planetid = await planet.read.tokenOfOwnerByIndex([connectedAccount, BigInt(Number(pBalance) - 1)]);
 
-        setTokenIds({ ...tokenIds, planet: planetid });
+        console.log("planetid", planetid);
+
+        setPTokenId(planetid);
       }
 
       // balance and tokenid for jupiter
@@ -235,12 +293,42 @@ const Home: NextPage = () => {
 
         const jupiterid = await jupiter.read.tokenOfOwnerByIndex([connectedAccount, BigInt(Number(jBalance) - 1)]);
 
-        setTokenIds({ ...tokenIds, jupiter: jupiterid });
+        setJTokenId(jupiterid);
+      }
+
+      // balance and tokenid for shooting star
+      const sBalance = await publicClient.readContract({
+        address: shootingStarContract.address,
+        abi: shootingStarContract.abi,
+        functionName: "balanceOf",
+        args: [connectedAccount],
+      });
+
+      setShootingStarBalance(Number(sBalance.toString()));
+
+      if (Number(sBalance.toString()) > 0) {
+        const jupiter = getContract({
+          address: shootingStarContract.address,
+          abi: shootingStarContract.abi,
+          publicClient,
+        });
+
+        const shootingid = await jupiter.read.tokenOfOwnerByIndex([connectedAccount, BigInt(Number(sBalance) - 1)]);
+
+        setSTokenId(shootingid);
       }
 
       setIsLoading(false);
     })();
-  }, [isConnected, connectedAccount, isLoadingSpaceContract, isLoadingPlanetContract]);
+  }, [
+    isMinting,
+    isComposing,
+    isConnected,
+    connectedAccount,
+    isLoadingSpaceContract,
+    isLoadingPlanetContract,
+    isLoadingShootingStarContract,
+  ]);
 
   return (
     <>
@@ -262,15 +350,15 @@ const Home: NextPage = () => {
                   onClick={() => {
                     const bodyBalance = getBodyBalance(body.id);
 
-                    if (bodyBalance === 1) {
-                      handleSet(body, tokenIds[body.id]);
+                    if (bodyBalance >= 1) {
+                      handleSet(body);
                     } else {
                       handleMint(body);
                     }
                   }}
                   className="btn btn-small"
                 >
-                  {getBodyBalance(body.id) === 1 ? "Set" : "Mint"}
+                  {getBodyBalance(body.id) >= 1 ? "Set" : "Mint"}
                 </div>
               ) : !isConnected ? (
                 <p>Connect Wallet</p>
