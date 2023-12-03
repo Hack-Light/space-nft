@@ -13,6 +13,7 @@ import { TypeCast } from "../libraries/utils/TypeCast.sol";
 import { ColorGen } from "../libraries/utils/ColorGen.sol";
 
 error Planet__NotMinted();
+error Planet__AlreadyMinted();
 error Planet__InvalidMintFee();
 error Planet__TransferFailed();
 error Planet__ZeroAddress();
@@ -30,12 +31,14 @@ contract Planet is ERC721Enumerable, Ownable {
 	Counters.Counter private s_tokenIds;
 
 	mapping(uint256 planetId => DataTypes.Planet planet) private s_attributes;
+	mapping(address => bool) private s_hasMinted;
 
 	constructor(address feeCollector) ERC721("Planet", "Planet") {
 		s_feeCollector = feeCollector;
 	}
 
 	function mint() public payable returns (uint256) {
+		if (s_hasMinted[msg.sender]) revert Planet__AlreadyMinted();
 		if (msg.value < MINT_FEE) revert Planet__InvalidMintFee();
 
 		s_tokenIds.increment();
@@ -55,6 +58,8 @@ contract Planet is ERC721Enumerable, Ownable {
 			mainColor: colors[0],
 			halfColor: colors[1]
 		});
+
+		s_hasMinted[msg.sender] = true;
 
 		// transfer mint fee
 		(bool success, ) = payable(owner()).call{ value: msg.value }("");

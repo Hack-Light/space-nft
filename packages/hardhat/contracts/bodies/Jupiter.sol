@@ -18,6 +18,8 @@ error Jupiter__TransferFailed();
 error Jupiter__ZeroAddress();
 error Jupiter__InvalidFeeCollector();
 error Jupiter__NotOwner();
+error Jupiter__AlreadyMinted();
+
 
 contract Jupiter is ERC721Enumerable, Ownable {
 	using TypeCast for bytes;
@@ -30,12 +32,14 @@ contract Jupiter is ERC721Enumerable, Ownable {
 	Counters.Counter private s_tokenIds;
 
 	mapping(uint256 jupiterId => DataTypes.Jupiter jupiter) private s_attributes;
+	mapping(address => bool) private s_hasMinted;
 
 	constructor(address feeCollector) ERC721("Jupiter", "Jupiter") {
 		s_feeCollector = feeCollector;
 	}
 
 	function mint() public payable returns (uint256) {
+		if (s_hasMinted[msg.sender]) revert Jupiter__AlreadyMinted();
 		if (msg.value < MINT_FEE) revert Jupiter__InvalidMintFee();
 
 		s_tokenIds.increment();
@@ -58,6 +62,8 @@ contract Jupiter is ERC721Enumerable, Ownable {
 			color4: colors[3],
 			color5: colors[4]
 		});
+
+		s_hasMinted[msg.sender] = true;
 
 		// transfer mint fee
 		(bool success, ) = payable(owner()).call{ value: msg.value }("");

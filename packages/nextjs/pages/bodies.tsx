@@ -72,7 +72,7 @@ const Home: NextPage = () => {
     setIsMinting(true);
     setIsLoading(true);
 
-    const notificationId = notification.loading(`Minting One(1) ${body.name}`);
+    const notificationId = notification.loading(`Minting One ${body.name}`);
 
     let hash: `0x${string}` | undefined;
 
@@ -116,6 +116,7 @@ const Home: NextPage = () => {
     }
 
     notification.remove(notificationId);
+    notification.info(`${body.name} Nft minted`);
     setIsMinting(false);
     setIsLoading(false);
   };
@@ -207,6 +208,7 @@ const Home: NextPage = () => {
       notification.error(`Error occured while trying to compose ${body.name}`);
     }
     notification.remove(notificationId);
+    notification.success("Space body successfully composed");
     setIsComposing(false);
     setIsLoading(false);
   };
@@ -327,6 +329,7 @@ const Home: NextPage = () => {
     connectedAccount,
     isLoadingSpaceContract,
     isLoadingPlanetContract,
+    isLoadingJupiterContract,
     isLoadingShootingStarContract,
   ]);
 

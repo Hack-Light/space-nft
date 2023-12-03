@@ -13,6 +13,7 @@ import { TypeCast } from "../libraries/utils/TypeCast.sol";
 import { PRNG } from "../libraries/utils/PRNG.sol";
 
 error ShootingStar__NotMinted();
+error ShootingStar__AlreadyMinted();
 error ShootingStar__InvalidMintFee();
 error ShootingStar__TransferFailed();
 error ShootingStar__ZeroAddress();
@@ -30,12 +31,14 @@ contract ShootingStar is ERC721Enumerable, Ownable {
 	Counters.Counter private s_tokenIds;
 
 	mapping(uint256 shootingstarId => DataTypes.ShootingStar shootingstar) private s_attributes;
+	mapping(address => bool) private s_hasMinted;
 
 	constructor(address feeCollector) ERC721("ShootingStar", "ShootingStar") {
 		s_feeCollector = feeCollector;
 	}
 
 	function mint() public payable returns (uint256) {
+		if (s_hasMinted[msg.sender]) revert ShootingStar__AlreadyMinted();
 		if (msg.value < MINT_FEE) revert ShootingStar__InvalidMintFee();
 
 		s_tokenIds.increment();
@@ -47,6 +50,8 @@ contract ShootingStar is ERC721Enumerable, Ownable {
 		s_attributes[tokenId] = DataTypes.ShootingStar({
 			duration: PRNG.range(15, 60, keccak256("1"))
 		});
+
+		s_hasMinted[msg.sender] = true;
 
 		// transfer mint fee
 		(bool success, ) = payable(owner()).call{ value: msg.value }("");

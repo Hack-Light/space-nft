@@ -94,7 +94,7 @@ const Space = ({ balance }: { balance: number }) => {
         <div className="col-md-12">
           <div className="profile-card-2">
             {metadata ? (
-              <SVG src={metadata.image || ""} />
+              <SVG id="img-svg" src={metadata.image || ""} />
             ) : isLoading ? (
               <Spinner />
             ) : (
